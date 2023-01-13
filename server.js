@@ -1,6 +1,6 @@
-import { config } from 'dotenv'
-import app from 'app'
-import mongoose from 'mongoose'
+const { config } = require('dotenv')
+const app = require('./src/app')
+const mongoose = require('mongoose')
 
 // Loads .env file contents into process.env.
 config({ path: '.env.production' })
