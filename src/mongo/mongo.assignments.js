@@ -22,6 +22,8 @@ module.exports = {
             limit
         )
     },
+    findAssignmentsByNom: async (nom) =>
+        Assignments.find({ nom: { $regex: new RegExp(nom, 'i') } }),
     count: async (filterParams = {}) => {
         return Assignments.find(
             generateAssignmentsFilters(filterParams)

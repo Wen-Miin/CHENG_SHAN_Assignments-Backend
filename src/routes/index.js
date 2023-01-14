@@ -149,8 +149,16 @@ router.get('/assignments', async (req, res) => {
     res.json(responsePayload)
 })
 
-// route pour récupérer un assignment via id
-// TODO
+// route pour chercher des assignment via nom
+router.get('/search', async (req, res) => {
+    const nom = req.query.nom // on récupère le nom dans la query de la requête
+
+    const assignments = await db.assignments.findAssignmentsByNom(nom) // on récupère les assignments qui ont le nom
+
+    console.log(`A user searched assignments by name ${nom}.`)
+    res.json(assignments) // on renvoie les assignments au client
+})
+
 
 // route pour créer un assignment
 router.post('/create-assignment', async (req, res) => {
