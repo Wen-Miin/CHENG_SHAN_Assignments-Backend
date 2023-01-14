@@ -1,8 +1,8 @@
 # API pour projet assignments
 
 ## Pour faire tourner le serveur
-*npm install
-*npm run dev
+* npm install
+* npm run dev
 
 Lancement en local : http://localhost:5001/
 
