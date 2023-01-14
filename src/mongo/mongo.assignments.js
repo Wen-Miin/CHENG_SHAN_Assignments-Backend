@@ -24,6 +24,8 @@ module.exports = {
     },
     findAssignmentsByNom: async (nom) =>
         Assignments.find({ nom: { $regex: new RegExp(nom, 'i') } }),
+    findAssignmentById: async (assignmentId) =>
+        Assignments.findOne({ _id: assignmentId }),
     count: async (filterParams = {}) => {
         return Assignments.find(
             generateAssignmentsFilters(filterParams)
@@ -38,4 +40,8 @@ module.exports = {
             }
         ),
     deleteAllAssignments: async () => Assignments.deleteMany({}),
+    deleteAssignment: async (assignmentId) =>
+        Assignments.deleteOne({ _id: assignmentId }),
+    updateAssignmentById: async (assignmentId, assignment) =>
+        Assignments.updateOne({ _id: assignmentId }, assignment),
 }

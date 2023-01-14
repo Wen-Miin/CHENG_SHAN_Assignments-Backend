@@ -19,31 +19,10 @@ function getToken(req) {
 }
 
 // on dit a nos routes d'utiliser a travers un préfix une autre instance d'express router.
-router.get('/', async (req, res) => {
-    const { username } = await db.users.findUserByToken(getToken(req)) // on récupère le token et on récupère le nom d'utilisateur par son token
+router.get('/welcome', async (req, res) => {
+    res.json({ message: 'Welcome to the API!' })
 
-    // on créé un objet de filtre a passer dans mongo
-    const filterParams = {
-        rendu,
-        username,
-    }
-
-    // on récupère tous les assignments avec les filtres
-    const assignments = await db.assignments.findAll(filterParams, page, limit)
-
-    // on construit la réponse que l'on va renvoyer au client
-    const responsePayload = {
-        data: assignments,
-        pagination: { page, limit, total: await db.assignments.count() },
-    }
-
-    // un petit console log pour garder de la traçabilité au niveau de notre api
-    console.log(
-        `User ${username} retrieved assignments at page: ${page} and limit: ${limit}.`
-    )
-
-    // on renvoie au client (le frontend) la réponse construite un peu plus haut avec les assignments dans data et les informations de pagination dans pagination
-    res.json(responsePayload)
+    console.log(`OK ça marche`)
 })
 
 // on crée une route pour récupérer les informations de l'utilisateur
@@ -119,17 +98,18 @@ router.get('/assignments', async (req, res) => {
         rendu,
     }
 
-    // on compte le nombre total d'assignments pour l'utilisateur connecé 
+    // on compte le nombre total d'assignments pour l'utilisateur connecé
     const numberOfAssignments = await db.assignments.count(filterParams)
 
     // on crée une fonction pour calculer le nombre de page
-    function getNumberOfPages(numberOfDocuments, limit) { // on prend en paramètre le nombre total d'assignments et la limite par page
+    function getNumberOfPages(numberOfDocuments, limit) {
+        // on prend en paramètre le nombre total d'assignments et la limite par page
         // si la limite est égale à 0, on ne veut pas diviser par 0.
         // Si limote = 0 , on définit à 1 pour le nombre de page
         return limit === 0 ? 1 : _.ceil(numberOfDocuments / limit) // on arrondi au nombre supérieur avec ceil
     }
 
-    // on calcule le nombre de page 
+    // on calcule le nombre de page
     const numberOfPages = getNumberOfPages(numberOfAssignments, limit)
 
     // on récupère tous les assignments avec les filtres
@@ -138,14 +118,14 @@ router.get('/assignments', async (req, res) => {
     // construction de la réponse envoyée au client
     const responsePayload = {
         pagination: { page, limit, numberOfPages, total: numberOfAssignments },
-        data: assignments
+        data: assignments,
     }
 
     console.log(
         `A user retrieved assignments at page: ${page} and limit: ${limit}.`
     )
 
-    // on renvoie au client la réponse 
+    // on renvoie au client la réponse
     res.json(responsePayload)
 })
 
@@ -153,12 +133,11 @@ router.get('/assignments', async (req, res) => {
 router.get('/search', async (req, res) => {
     const nom = req.query.nom // on récupère le nom dans la query de la requête
 
-    const assignments = await db.assignments.findAssignmentsByNom(nom) // on récupère les assignments qui ont le nom
-
+    // on récupère les assignments qui ont le nom
+    const assignments = await db.assignments.findAssignmentsByNom(nom)
     console.log(`A user searched assignments by name ${nom}.`)
     res.json(assignments) // on renvoie les assignments au client
 })
-
 
 // route pour créer un assignment
 router.post('/create-assignment', async (req, res) => {
@@ -182,6 +161,45 @@ router.post('/create-assignment', async (req, res) => {
 
     res.json(assignment) // on renvoie l'assignment au client
 })
+
+// route pour modifier un assignment
+router.put('/update-assignment/:id', async (req, res) => {
+    const { id } = req.params // on récupère l'id dans les params de la requête
+
+    const { nom, auteur, matiere, dateDeRendu, note, rendu, remarque } =
+        req.body // on récupère le title, description et rendu dans le body de la requête
+
+    const assignment = await db.assignments.updateAssignments(
+        // on modifie l'assignment
+        {
+            nom,
+            auteur,
+            matiere,
+            dateDeRendu,
+            note,
+            rendu,
+            remarque,
+        },
+        id
+    )
+
+    console.log(`A user updated assignment ${nom}.`)
+
+    res.json(assignment) // on renvoie l'assignment au client
+})
+
+// route pour supprimer un assignment
+router.delete('/delete-assignment/:id', async (req, res) => {
+    const { id } = req.params // on récupère l'id dans les params de la requête
+
+    const assignment = await db.assignments.deleteAssignments(id) // on supprime l'assignment
+
+    console.log(`A user deleted assignment ${assignment.nom}.`)
+    res.json(assignment) // on renvoie l'assignment au client
+})
+
+
+
 
 
 module.exports = router
