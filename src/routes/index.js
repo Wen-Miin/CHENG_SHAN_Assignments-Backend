@@ -96,13 +96,12 @@ router.post('/login', async (req, res) => {
     }) // on renvoie le token au client
 })
 
+// route pour créer un assignment
 router.post('/create-assignment', async (req, res) => {
-    const { username } = await db.users.findUserByToken(getToken(req)) // on récupère le token et on récupère le nom d'utilisateur par son token
-
     const { nom, auteur, matiere, dateDeRendu, note, rendu, remarque } =
         req.body // on récupère le title, description et rendu dans le body de la requête
 
-    const assignment = await db.assignments.createAssignment(
+    const assignment = await db.assignments.createAssignments(
         // on crée l'assignment
         {
             nom,
@@ -115,9 +114,10 @@ router.post('/create-assignment', async (req, res) => {
         }
     )
 
-    console.log('User ${username} created assignment ${nom}.')
+    console.log(`A user created assignment ${nom}.`)
 
     res.json(assignment) // on renvoie l'assignment au client
 })
+
 
 module.exports = router

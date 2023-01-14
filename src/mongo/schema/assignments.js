@@ -24,6 +24,7 @@ const Assignments = new Schema({
     },
     rendu: {
         type: Boolean,
+        default: false,
     },
     remarque: {
         type: String,

@@ -14,7 +14,7 @@ const router = express.Router()
 
 // on génère un hash du mot de passe
 async function generateHashPassword(password) {
-    await bcrypt.hash(password, saltRounds)
+    return await bcrypt.hash(password, saltRounds)
 }
 
 // vérification du token
@@ -31,7 +31,7 @@ async function VerifyToken(token) {
             return res
                 .status(500)
                 .send({ auth: false, message: 'Failed to authenticate token.' })
-        res.status(200).send(decoded)
+        return res.status(200).send(decoded)
     })
 }
 
