@@ -1,4 +1,7 @@
 # API pour projet assignments
+Projet en binôme : 
+* CHENG Wen-Miin 
+* SHAN MianMian
 
 ## Pour faire tourner le serveur
 * npm install
