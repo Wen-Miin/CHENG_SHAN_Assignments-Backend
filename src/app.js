@@ -7,7 +7,7 @@ const app = express()
 
 const corsOptions = {
     origin: [
-        'http://localhost:4200',
+        'https://front.miage-assignment.cf',
         // add more urls here to allow cross origin
     ],
 }
