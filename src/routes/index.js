@@ -8,7 +8,7 @@ const router = express.Router()
 
 // récupération du token
 function getToken(req) {
-    _.replace(req.headers.authorization, 'Bearer ', '')
+    return _.replace(req.headers.authorization, 'Bearer ', '')
 }
 
 /**
@@ -75,6 +75,7 @@ router.get('/assignments', async (req, res) => {
     // query params à récupérer pour filtrer les assignments dans l'url
     const rendu = req.query.rendu // rendu est un boolean qui permet de filter les assignments rendus ou non
     const nom = req.query.nom // permet de filter les assignments par nom
+    const { username } = await db.users.findUserByToken(getToken(req)) // permet de filter les assignments par username
 
     function getPaginationParams(req) {
         // valeur max entre la query param et une autre valeur pour éviter de renvoyer une page ou un limit négatif
@@ -91,6 +92,7 @@ router.get('/assignments', async (req, res) => {
     const filterParams = {
         nom,
         rendu,
+        username,
     }
 
     // on compte le nombre total d'assignments pour l'utilisateur connecé
@@ -116,26 +118,15 @@ router.get('/assignments', async (req, res) => {
         data: assignments,
     }
 
-    console.log(
-        `A user retrieved assignments at page: ${page} and limit: ${limit}.`
-    )
+    console.log(`${username} retrieved ${numberOfAssignments} assignments.`)
 
     // on renvoie au client la réponse
     res.json(responsePayload)
 })
 
-// route pour chercher des assignment via nom
-router.get('/search', async (req, res) => {
-    const nom = req.query.nom // on récupère le nom dans la query de la requête
-
-    // on récupère les assignments qui ont le nom
-    const assignments = await db.assignments.findAssignmentsByNom(nom)
-    console.log(`A user searched assignments by name ${nom}.`)
-    res.json(assignments) // on renvoie les assignments au client
-})
-
 // route pour créer un assignment
 router.post('/create-assignment', async (req, res) => {
+    const { username } = await db.users.findUserByToken(getToken(req)) // on récupère le username de l'utilisateur connecté
     const { nom, auteur, matiere, dateDeRendu, note, rendu, remarque } =
         req.body // on récupère le title, description et rendu dans le body de la requête
 
@@ -152,7 +143,7 @@ router.post('/create-assignment', async (req, res) => {
         }
     )
 
-    console.log(`A user created assignment ${nom}.`)
+    console.log(`${username} created assignment ${nom}.`)
 
     res.json(assignment) // on renvoie l'assignment au client
     next() // on passe à la route suivante

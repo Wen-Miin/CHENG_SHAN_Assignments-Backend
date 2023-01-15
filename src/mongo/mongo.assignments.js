@@ -3,7 +3,8 @@ const schema = require('./schema')
 const { Assignments } = schema
 
 // generation de filtres pour assignments
-const generateAssignmentsFilters = ({ rendu, username }) => ({
+const generateAssignmentsFilters = ({ nom, rendu, username }) => ({
+    ...(!!nom && { nom: { $regex: nom } }),
     ...(rendu === 'true' && { rendu: true }),
     ...(rendu === 'false' && { rendu: false }),
     auteur: { $regex: new RegExp(username, 'i') },
