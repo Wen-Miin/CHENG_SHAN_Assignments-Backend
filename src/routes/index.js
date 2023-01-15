@@ -18,7 +18,7 @@ function getToken(req) {
     _.replace(req.headers.authorization, 'Bearer ', '')
 }
 
-// on dit a nos routes d'utiliser a travers un préfix une autre instance d'express router.
+// router pour vérfier si le back marche
 router.get('/welcome', async (req, res) => {
     res.json({ message: 'Welcome to the API!' })
 
@@ -167,9 +167,9 @@ router.put('/update-assignment/:id', async (req, res) => {
     const { id } = req.params // on récupère l'id dans les params de la requête
 
     const { nom, auteur, matiere, dateDeRendu, note, rendu, remarque } =
-        req.body // on récupère le title, description et rendu dans le body de la requête
+        req.body // on récupère les données à modifier dans le body de la requête
 
-    const assignment = await db.assignments.updateAssignments(
+    const assignment = await db.assignments.updateAssignmentById(
         // on modifie l'assignment
         {
             nom,
@@ -192,13 +192,11 @@ router.put('/update-assignment/:id', async (req, res) => {
 router.delete('/delete-assignment/:id', async (req, res) => {
     const { id } = req.params // on récupère l'id dans les params de la requête
 
-    const assignment = await db.assignments.deleteAssignments(id) // on supprime l'assignment
+    const assignment = await db.assignments.deleteAssignment(id) // on supprime l'assignment
 
     console.log(`A user deleted assignment ${assignment.nom}.`)
     res.json(assignment) // on renvoie l'assignment au client
 })
-
-
 
 
 
